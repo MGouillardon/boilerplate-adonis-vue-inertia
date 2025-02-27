@@ -8,7 +8,7 @@ A boilerplate combining AdonisJS, Vue 3, Inertia, TailwindCSS and DaisyUI with c
 - **Frontend**: Vue 3 with Inertia.js
 - **Styling**: TailwindCSS with DaisyUI
 - **Themes**: Customizable system with theme selection via CLI command
-- **Database**: Preconfigured SQLite for quick start
+- **Database**: Preconfigured SQLite
 
 ## Installation
 
@@ -19,14 +19,30 @@ cd boilerplate-adonis-vue-inertia
 
 # Rename the project (optional)
 mv boilerplate-adonis-vue-inertia your-project-name
-
-# Install dependencies
-npm install
 ```
 
-## Configuration
+### Option 1: Automated Installation (Recommended)
 
 ```bash
+# Run the setup script
+npm run setup
+```
+
+The setup script will automate the following steps:
+
+- Installing dependencies
+- Creating the .env file
+- Generating the application key
+- Creating the tmp directory for SQLite
+- Running migrations
+- Interactive theme configuration
+
+### Option 2: Manual Installation
+
+```bash
+# Install dependencies
+npm install
+
 # Create environment file
 cp .env.example .env
 

@@ -16,7 +16,7 @@ export default class ConfigureThemeCommand extends BaseCommand {
     '  {{ binaryName }} configure:theme',
     '',
     '  # Configuration without dark mode',
-    '  {{ binaryName }} configure:theme --no-dark-mode',
+    '  {{ binaryName }} configure:theme -n',
     '',
     '  # Custom CSS path',
     '  {{ binaryName }} configure:theme --css-path=resources/css/app.css',

@@ -61,7 +61,7 @@ rl.question('Do you want to disable dark mode? (y/n): ', (disableDarkMode) => {
     let themeCommand = 'node ace configure:theme'
 
     if (disableDarkMode.toLowerCase() === 'y') {
-      themeCommand += ' --no-dark-mode'
+      themeCommand += ' -n'
     }
 
     if (customCssPath.toLowerCase() === 'y') {

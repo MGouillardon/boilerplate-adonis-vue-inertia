@@ -85,24 +85,24 @@ export default class ConfigureThemeCommand extends BaseCommand {
   }
 
   async run() {
-    this.logger.info('🎨 Configuration des thèmes DaisyUI pour votre projet')
+    this.logger.info('🎨 Configuring DaisyUI themes for your project')
 
     const cssFilePath = this.cssPath || 'inertia/css/app.css'
     const fullCssPath = path.join(process.cwd(), cssFilePath)
 
     if (!fs.existsSync(path.dirname(fullCssPath))) {
-      this.logger.warning(`Le répertoire ${path.dirname(fullCssPath)} n'existe pas. Création...`)
+      this.logger.warning(`Directory ${path.dirname(fullCssPath)} doesn't exist. Creating...`)
       fs.mkdirSync(path.dirname(fullCssPath), { recursive: true })
     }
 
     const defaultTheme = await this.prompt.choice(
-      'Choisissez le thème par défaut:',
+      'Choose the default theme:',
       this.AVAILABLE_THEMES.map((theme) => ({
         name: theme,
         message: theme,
       })),
       {
-        default: this.AVAILABLE_THEMES.indexOf('light'),
+        default: 'light',
       }
     )
 
@@ -110,34 +110,28 @@ export default class ConfigureThemeCommand extends BaseCommand {
 
     let darkTheme = ''
     if (!this.noDarkMode) {
-      const useDarkMode = await this.prompt.confirm(
-        'Voulez-vous configurer un thème pour le mode sombre?',
-        {
-          default: true,
-        }
-      )
+      const useDarkMode = await this.prompt.confirm('Do you want to configure a dark mode theme?', {
+        default: true,
+      })
 
       if (useDarkMode) {
         darkTheme = await this.prompt.choice(
-          'Choisissez le thème pour le mode sombre:',
+          'Choose the dark mode theme:',
           this.AVAILABLE_THEMES.map((theme) => ({
             name: theme,
             message: theme,
           })),
           {
-            default: this.AVAILABLE_THEMES.indexOf('dark'),
+            default: 'dark',
           }
         )
         selectedThemes.push(`${darkTheme} --prefersdark`)
       }
     }
 
-    const addAdditionalThemes = await this.prompt.confirm(
-      'Voulez-vous ajouter des thèmes supplémentaires?',
-      {
-        default: false,
-      }
-    )
+    const addAdditionalThemes = await this.prompt.confirm('Do you want to add additional themes?', {
+      default: false,
+    })
 
     if (addAdditionalThemes) {
       const availableThemes = this.AVAILABLE_THEMES.filter(
@@ -149,7 +143,7 @@ export default class ConfigureThemeCommand extends BaseCommand {
 
       if (availableThemes.length > 0) {
         const additionalThemes = await this.prompt.multiple(
-          'Sélectionnez des thèmes additionnels:',
+          'Select additional themes:',
           availableThemes
         )
 
@@ -160,24 +154,24 @@ export default class ConfigureThemeCommand extends BaseCommand {
     const daisyUIConfig = this.generateDaisyUIConfig(selectedThemes)
     fs.writeFileSync(fullCssPath, daisyUIConfig)
 
-    this.logger.success(`✅ Configuration des thèmes terminée avec succès!`)
+    this.logger.success(`✅ Theme configuration completed successfully!`)
 
     const table = this.ui.table()
-    table.head(['Type', 'Thème', 'Flag'])
+    table.head(['Type', 'Theme', 'Flag'])
 
-    table.row(['Par défaut', defaultTheme, '--default'])
+    table.row(['Default', defaultTheme, '--default'])
 
     if (darkTheme) {
-      table.row(['Mode sombre', darkTheme, '--prefersdark'])
+      table.row(['Dark mode', darkTheme, '--prefersdark'])
     }
 
     const additionalOnly = selectedThemes.slice(darkTheme ? 2 : 1)
     for (const theme of additionalOnly) {
-      table.row(['Additionnel', theme, ''])
+      table.row(['Additional', theme, ''])
     }
 
     table.render()
 
-    this.logger.info(`Configuration enregistrée dans: ${this.colors.cyan(fullCssPath)}`)
+    this.logger.info(`Configuration saved to: ${this.colors.cyan(fullCssPath)}`)
   }
 }

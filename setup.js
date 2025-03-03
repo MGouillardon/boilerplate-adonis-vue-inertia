@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-
 import { execSync } from 'child_process'
 import fs from 'fs'
 import readline from 'readline'
+import path from 'path'
 
 try {
   execSync('chmod +x setup.js')
@@ -16,6 +16,17 @@ const rl = readline.createInterface({
 })
 
 console.log('\n🚀 Setting up Adonis-Vue-Inertia Boilerplate...\n')
+
+// Remove .git directory if it exists
+const gitDirExists = fs.existsSync(path.join(process.cwd(), '.git'))
+if (gitDirExists) {
+  console.log('🗑️  Removing existing Git repository from boilerplate...')
+  try {
+    fs.rmSync(path.join(process.cwd(), '.git'), { recursive: true, force: true })
+  } catch (error) {
+    console.error('Error removing Git repository:', error.message)
+  }
+}
 
 // Create tmp directory for SQLite if it doesn't exist
 if (!fs.existsSync('tmp')) {
@@ -67,15 +78,15 @@ rl.question('Do you want to disable dark mode? (y/n): ', (disableDarkMode) => {
     if (customCssPath.toLowerCase() === 'y') {
       rl.question('Please enter the CSS file path: ', (cssPath) => {
         themeCommand += ` --css-path=${cssPath}`
-        finishSetup(themeCommand)
+        configureThemeAndContinue(themeCommand)
       })
     } else {
-      finishSetup(themeCommand)
+      configureThemeAndContinue(themeCommand)
     }
   })
 })
 
-function finishSetup(themeCommand) {
+function configureThemeAndContinue(themeCommand) {
   console.log('🎨 Configuring DaisyUI theme...')
   try {
     execSync(themeCommand, { stdio: 'inherit' })
@@ -83,8 +94,32 @@ function finishSetup(themeCommand) {
     console.error('Error configuring theme:', error.message)
   }
 
+  // Ask to initialize a new Git repository
+  rl.question('Do you want to initialize a new Git repository? (y/n): ', (initGit) => {
+    if (initGit.toLowerCase() === 'y') {
+      console.log('🔄 Initializing a new Git repository...')
+      try {
+        execSync('git init', { stdio: 'inherit' })
+        console.log('📝 Creating initial commit...')
+        try {
+          execSync('git add .', { stdio: 'inherit' })
+          execSync('git commit -m "feat: init"', {
+            stdio: 'inherit',
+          })
+        } catch (error) {
+          console.error('Error creating initial commit:', error.message)
+        }
+      } catch (error) {
+        console.error('Error initializing Git repository:', error.message)
+      }
+    }
+
+    finishSetup()
+  })
+}
+
+function finishSetup() {
   console.log('\n✅ Setup complete! You can start the development server with:')
   console.log('npm run dev\n')
-
   rl.close()
 }
